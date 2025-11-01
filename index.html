@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>السوق المفتوح - الموقع الإلكتروني للإعلانات</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>السوق المفتوح</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="active">الرئيسية</a>
+                <a href="post-ad.html" id="postAdLink">أضف إعلان</a>
+                <a href="login.html" id="loginLink">تسجيل الدخول</a>
+                <a href="#" id="logoutLink" style="display:none;" onclick="logout(); return false;">تسجيل الخروج</a>
+                <a href="user-dashboard.html" id="userDashboardLink" style="display:none;">لوحتي</a>
+                <a href="admin.html" id="adminLink" style="display:none;">لوحة التحكم</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h2>ابحث عن ما تريد أو أضف إعلانك مجاناً</h2>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="ابحث عن سيارة، عقار، موبايل...">
+                <select id="categoryFilter" onchange="updateCategoryFilter()">
+                    <option value="all">جميع الفئات</option>
+                </select>
+                <button onclick="searchAds()">بحث</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Tabs -->
+    <section class="categories">
+        <div class="container">
+            <div class="category-tabs" id="mainCategoryTabs">
+                <!-- Main categories will be loaded here -->
+            </div>
+            <div class="subcategory-tabs" id="subCategoryTabs" style="display:none;">
+                <!-- Subcategories will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Ads Grid -->
+    <section class="ads-section">
+        <div class="container">
+            <h2 class="section-title">الإعلانات المتاحة</h2>
+            <div id="adsGrid" class="ads-grid">
+                <!-- Ads will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 السوق المفتوح. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="analytics.js"></script>
+    <script>
+        // Update site name and settings on load
+        updateSiteName();
+        updateSiteColor();
+        
+        // Check login status on page load
+        checkAuthStatus();
+        loadAds();
+        
+        // Load main category tabs
+        loadMainCategoryTabs();
+        
+        // Function to update category tabs dynamically
+        function updateCategoryTabs() {
+            loadMainCategoryTabs();
+        }
+        
+        // Also update category dropdowns
+        function updateCategoryDropdowns() {
+            const mainCategories = getMainCategories();
+            const categoryFilter = document.getElementById('categoryFilter');
+            if (categoryFilter) {
+                const currentValue = categoryFilter.value;
+                let optionsHtml = '<option value="all">جميع الفئات</option>';
+                mainCategories.forEach(cat => {
+                    optionsHtml += `<option value="${cat.id}">${cat.icon || ''} ${cat.nameAr}</option>`;
+                    // Add subcategories
+                    if (cat.subcategories) {
+                        cat.subcategories.forEach(subCat => {
+                            optionsHtml += `<option value="${subCat.id}">  └─ ${subCat.nameAr}</option>`;
+                        });
+                    }
+                });
+                categoryFilter.innerHTML = optionsHtml;
+                categoryFilter.value = currentValue;
+            }
+        }
+        
+        function updateCategoryFilter() {
+            const category = document.getElementById('categoryFilter').value;
+            loadAds(category);
+        }
+        
+        // Initialize category dropdown on load
+        updateCategoryDropdowns();
+        
+        // Listen for site updates from admin panel
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'site_update_notification') {
+                if (e.newValue) {
+                    try {
+                        const updateData = JSON.parse(e.newValue);
+                        if (updateData.type === 'ads' || updateData.type === 'categories') {
+                            loadAds(); // Reload ads
+                            if (updateData.type === 'categories') {
+                                updateCategoryTabs(); // Update category tabs
+                                updateCategoryDropdowns(); // Update dropdowns
+                            }
+                            console.log('تم تحديث الموقع من لوحة التحكم');
+                        } else if (updateData.type === 'settings') {
+                            updateSiteName(); // Update site name
+                            updateSiteColor(); // Update site color
+                            console.log('تم تحديث إعدادات الموقع');
+                        }
+                    } catch (err) {
+                        console.error('Error parsing update notification:', err);
+                    }
+                }
+            }
+        });
+        
+        // Also listen for custom events (same window)
+        window.addEventListener('siteUpdated', function(e) {
+            if (e.detail === 'ads' || e.detail === 'categories') {
+                loadAds(); // Reload ads
+                if (e.detail === 'categories') {
+                    updateCategoryTabs(); // Update category tabs
+                    updateCategoryDropdowns(); // Update dropdowns
+                }
+                console.log('تم تحديث الموقع من لوحة التحكم');
+            } else if (e.detail === 'settings') {
+                updateSiteName(); // Update site name
+                updateSiteColor(); // Update site color
+                console.log('تم تحديث إعدادات الموقع');
+            }
+        });
+        
+        // Periodic check for updates (fallback)
+        setInterval(function() {
+            const lastUpdate = localStorage.getItem('last_ads_update');
+            if (lastUpdate) {
+                const lastUpdateTime = parseInt(lastUpdate);
+                const now = Date.now();
+                // If update was recent (within last 5 seconds), reload
+                if (now - lastUpdateTime < 5000) {
+                    loadAds();
+                    updateCategoryTabs();
+                    updateCategoryDropdowns();
+                    localStorage.removeItem('last_ads_update');
+                }
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
+

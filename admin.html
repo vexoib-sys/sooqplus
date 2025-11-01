@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - السوق المفتوح</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>لوحة التحكم - السوق المفتوح</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">الرئيسية</a>
+                <a href="admin.html" class="active">لوحة التحكم</a>
+                <a href="#" onclick="logout()">تسجيل الخروج</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Dashboard -->
+    <section class="admin-dashboard">
+        <div class="container">
+            <div class="admin-header">
+                <h2>لوحة التحكم الإدارية</h2>
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <h3 id="totalAds">0</h3>
+                        <p>إجمالي الإعلانات</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalUsers">0</h3>
+                        <p>إجمالي المستخدمين</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="pendingAds">0</h3>
+                        <p>إعلانات قيد المراجعة</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="activeAds">0</h3>
+                        <p>إعلانات نشطة</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Tabs -->
+            <div class="admin-tabs">
+                <button class="admin-tab-btn active" onclick="showAdminTab('analytics', this)">تحليلات الموقع</button>
+                <button class="admin-tab-btn" onclick="showAdminTab('ads', this)">إدارة الإعلانات</button>
+                <button class="admin-tab-btn" onclick="showAdminTab('users', this)">إدارة المستخدمين</button>
+                <button class="admin-tab-btn" onclick="showAdminTab('categories', this)">إدارة الفئات</button>
+                <button class="admin-tab-btn" onclick="showAdminTab('reports', this)">التقارير</button>
+                <button class="admin-tab-btn" onclick="showAdminTab('settings', this)">الإعدادات</button>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analyticsTab" class="admin-tab-content active">
+                <div class="analytics-section">
+                    <h3>تحليلات وإحصائيات الموقع</h3>
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h4>عدد الزوار</h4>
+                            <div class="analytics-value" id="totalVisitors">0</div>
+                            <p class="analytics-label">إجمالي الزيارات</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>زوار اليوم</h4>
+                            <div class="analytics-value" id="todayVisitors">0</div>
+                            <p class="analytics-label">زيارات اليوم</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>زوار هذا الأسبوع</h4>
+                            <div class="analytics-value" id="weekVisitors">0</div>
+                            <p class="analytics-label">زيارات هذا الأسبوع</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>زوار هذا الشهر</h4>
+                            <div class="analytics-value" id="monthVisitors">0</div>
+                            <p class="analytics-label">زيارات هذا الشهر</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>إعلانات مشاهدة</h4>
+                            <div class="analytics-value" id="totalAdViews">0</div>
+                            <p class="analytics-label">إجمالي مشاهدات الإعلانات</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>معدل النقر</h4>
+                            <div class="analytics-value" id="clickRate">0%</div>
+                            <p class="analytics-label">نسبة النقر على الإعلانات</p>
+                        </div>
+                    </div>
+                    <div class="analytics-charts">
+                        <div class="chart-section">
+                            <h4>إحصائيات الزوار (آخر 7 أيام)</h4>
+                            <div id="visitorsChart" class="chart-container">
+                                <!-- Chart will be generated here -->
+                            </div>
+                        </div>
+                        <div class="chart-section">
+                            <h4>إحصائيات الإعلانات حسب الفئة</h4>
+                            <div id="categoryChart" class="chart-container">
+                                <!-- Chart will be generated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ads Management Tab -->
+            <div id="adsTab" class="admin-tab-content">
+                <div class="admin-actions">
+                    <input type="text" id="searchAdsAdmin" placeholder="بحث في الإعلانات..." onkeyup="searchAdsAdmin()">
+                    <select id="filterAdsStatus" onchange="filterAdsAdmin()">
+                        <option value="all">جميع الحالات</option>
+                        <option value="active">نشط</option>
+                        <option value="pending">قيد المراجعة</option>
+                        <option value="rejected">مرفوض</option>
+                    </select>
+                    <select id="filterAdsCategory" onchange="filterAdsAdmin()">
+                        <option value="all">جميع الفئات</option>
+                        <option value="cars">سيارات</option>
+                        <option value="electronics">إلكترونيات</option>
+                        <option value="real-estate">عقارات</option>
+                        <option value="jobs">وظائف</option>
+                        <option value="services">خدمات</option>
+                        <option value="fashion">أزياء</option>
+                        <option value="pets">حيوانات أليفة</option>
+                        <option value="furniture">أثاث</option>
+                    </select>
+                </div>
+                <div id="adminAdsList" class="admin-list">
+                    <!-- Ads will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Users Management Tab -->
+            <div id="usersTab" class="admin-tab-content">
+                <div class="admin-actions">
+                    <input type="text" id="searchUsersAdmin" placeholder="بحث في المستخدمين..." onkeyup="searchUsersAdmin()">
+                    <select id="filterUsersStatus" onchange="filterUsersAdmin()">
+                        <option value="all">جميع الحالات</option>
+                        <option value="active">نشط</option>
+                        <option value="suspended">معطل</option>
+                    </select>
+                </div>
+                <div id="adminUsersList" class="admin-list">
+                    <!-- Users will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Categories Management Tab -->
+            <div id="categoriesTab" class="admin-tab-content">
+                <div class="admin-actions">
+                    <button class="btn-primary" onclick="showAddCategoryModal()">إضافة فئة جديدة</button>
+                </div>
+                <div id="adminCategoriesList" class="admin-list">
+                    <!-- Categories will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div id="reportsTab" class="admin-tab-content">
+                <div class="reports-section">
+                    <h3>تقارير الإعلانات</h3>
+                    <div class="report-filters">
+                        <label>من تاريخ:</label>
+                        <input type="date" id="reportDateFrom">
+                        <label>إلى تاريخ:</label>
+                        <input type="date" id="reportDateTo">
+                        <button class="btn-primary" onclick="generateReport()">إنشاء تقرير</button>
+                    </div>
+                    <div id="reportResults" class="report-results">
+                        <!-- Report results will be shown here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settingsTab" class="admin-tab-content">
+                <div class="settings-section">
+                    <h3>إعدادات الموقع</h3>
+                    <div class="form-group">
+                        <label>اسم الموقع</label>
+                        <input type="text" id="siteName" value="السوق المفتوح">
+                    </div>
+                    <div class="form-group">
+                        <label>البريد الإلكتروني للدعم</label>
+                        <input type="email" id="supportEmail" value="support@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>رقم هاتف الدعم</label>
+                        <input type="tel" id="supportPhone" value="1234567890">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="requireApproval"> يتطلب موافقة إدارية على الإعلانات الجديدة
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="allowRegistration"> السماح بالتسجيل للمستخدمين الجدد
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>لون الموقع الرئيسي</label>
+                        <input type="color" id="siteColor" value="#ff6b35">
+                    </div>
+                    <div class="form-group">
+                        <label>شعار الموقع (رابط URL)</label>
+                        <input type="text" id="siteLogo" placeholder="https://example.com/logo.png">
+                    </div>
+                    <div class="form-group">
+                        <label>وصف الموقع</label>
+                        <textarea id="siteDescription" rows="3" placeholder="وصف الموقع..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>عدد الإعلانات لكل صفحة</label>
+                        <input type="number" id="adsPerPage" value="12" min="6" max="50">
+                    </div>
+                    <button class="btn-primary" onclick="saveSettings()">حفظ الإعدادات</button>
+                    <div id="settingsMessage" class="success-message" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal for Edit Ad -->
+    <div id="editAdModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editAdModal')">&times;</span>
+            <h3>تعديل الإعلان</h3>
+            <form id="editAdForm" onsubmit="handleEditAd(event)">
+                <input type="hidden" id="editAdId">
+                <div class="form-group">
+                    <label>العنوان</label>
+                    <input type="text" id="editAdTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>الفئة</label>
+                    <select id="editAdCategory" required></select>
+                </div>
+                <div class="form-group">
+                    <label>السعر</label>
+                    <input type="number" id="editAdPrice" required>
+                </div>
+                <div class="form-group">
+                    <label>الموقع</label>
+                    <input type="text" id="editAdLocation" required>
+                </div>
+                <div class="form-group">
+                    <label>الوصف</label>
+                    <textarea id="editAdDescription" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>الحالة</label>
+                    <select id="editAdStatus" required>
+                        <option value="active">نشط</option>
+                        <option value="pending">قيد المراجعة</option>
+                        <option value="rejected">مرفوض</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">حفظ التغييرات</button>
+            </form>
+        </div>
+    </div>
+
+            <!-- Modal for Add Category -->
+            <div id="addCategoryModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('addCategoryModal')">&times;</span>
+                    <h3>إضافة فئة جديدة</h3>
+                    <form id="addCategoryForm" onsubmit="handleAddCategory(event)">
+                        <input type="hidden" id="editCategoryId">
+                        <div class="form-group">
+                            <label>اسم الفئة (عربي)</label>
+                            <input type="text" id="categoryNameAr" required>
+                        </div>
+                        <div class="form-group">
+                            <label>اسم الفئة (إنجليزي - للكود)</label>
+                            <input type="text" id="categoryNameEn" required>
+                        </div>
+                        <div class="form-group">
+                            <label>أيقونة الفئة (Emoji)</label>
+                            <input type="text" id="categoryIcon" placeholder="🚗 📱 🏠" maxlength="2">
+                            <small>يمكنك استخدام أي emoji</small>
+                        </div>
+                        <button type="submit" class="btn-primary">إضافة الفئة</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal for Add Subcategory -->
+            <div id="addSubcategoryModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('addSubcategoryModal')">&times;</span>
+                    <h3>إضافة قسم فرعي</h3>
+                    <form id="addSubcategoryForm" onsubmit="handleAddSubcategory(event)">
+                        <input type="hidden" id="subcategoryMainCategoryId">
+                        <div class="form-group">
+                            <label>اسم القسم الفرعي (عربي)</label>
+                            <input type="text" id="subcategoryNameAr" required>
+                        </div>
+                        <div class="form-group">
+                            <label>اسم القسم الفرعي (إنجليزي - للكود)</label>
+                            <input type="text" id="subcategoryNameEn" required>
+                        </div>
+                        <button type="submit" class="btn-primary">إضافة القسم الفرعي</button>
+                    </form>
+                </div>
+            </div>
+
+    <script src="script.js"></script>
+    <script src="analytics.js"></script>
+    <script src="admin.js"></script>
+    <script>
+        // Check if user is admin
+        if (!isAdmin()) {
+            alert('ليس لديك صلاحية للوصول إلى لوحة التحكم');
+            window.location.href = 'index.html';
+        }
+        loadAdminDashboard();
+    </script>
+</body>
+</html>
+

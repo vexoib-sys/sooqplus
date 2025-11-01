@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أضف إعلان - السوق المفتوح</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>السوق المفتوح</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">الرئيسية</a>
+                <a href="post-ad.html" class="active">أضف إعلان</a>
+                <a href="#" id="logoutLink" onclick="logout(); return false;">تسجيل الخروج</a>
+                <a href="user-dashboard.html" id="userDashboardLink">لوحتي</a>
+                <a href="admin.html" id="adminLink" style="display:none;">لوحة التحكم</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Post Ad Form -->
+    <section class="post-ad-section">
+        <div class="container">
+            <div class="post-ad-card">
+                <h2>إضافة إعلان جديد</h2>
+                <form id="postAdForm" onsubmit="handlePostAd(event)">
+                    <div class="form-group">
+                        <label for="adTitle">عنوان الإعلان</label>
+                        <input type="text" id="adTitle" required placeholder="مثال: سيارة تويوتا كامري 2020">
+                    </div>
+                    <div class="form-group">
+                        <label for="adMainCategory">القسم الرئيسي</label>
+                        <select id="adMainCategory" required onchange="loadSubcategoryOptions()">
+                            <option value="">اختر القسم الرئيسي</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="subcategoryGroup" style="display:none;">
+                        <label for="adCategory">القسم الفرعي</label>
+                        <select id="adCategory" required>
+                            <option value="">اختر القسم الفرعي</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="adPrice">السعر</label>
+                        <input type="number" id="adPrice" required placeholder="بالدينار">
+                    </div>
+                    <div class="form-group">
+                        <label for="adLocation">الموقع</label>
+                        <input type="text" id="adLocation" required placeholder="مثال: عمان، الدوار السابع">
+                    </div>
+                    <div class="form-group">
+                        <label for="adDescription">وصف الإعلان</label>
+                        <textarea id="adDescription" rows="6" required placeholder="اكتب وصفاً مفصلاً عن إعلانك..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="adPhone">رقم الهاتف</label>
+                        <input type="tel" id="adPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adImages">إضافة صور (اختياري)</label>
+                        <input type="file" id="adImages" accept="image/*" multiple onchange="previewImages(event)">
+                        <div id="imagePreview" class="image-preview-container"></div>
+                        <small>يمكنك إضافة أكثر من صورة</small>
+                    </div>
+                    <button type="submit" class="btn-primary">نشر الإعلان</button>
+                </form>
+                <div id="postAdError" class="error-message" style="display:none;"></div>
+                <div id="postAdSuccess" class="success-message" style="display:none;"></div>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+    <script>
+        // Check if user is logged in
+        if (!isLoggedIn()) {
+            alert('يجب تسجيل الدخول أولاً');
+            window.location.href = 'login.html';
+        }
+        checkAuthStatus();
+        updateSiteName();
+        updateSiteColor();
+        loadCategoryOptions();
+        
+        // Make sure logout works
+        if (typeof logout !== 'function') {
+            window.logout = function() {
+                if (typeof setCurrentUser === 'function') {
+                    setCurrentUser(null);
+                } else {
+                    localStorage.removeItem('classified_current_user');
+                }
+                window.location.href = 'index.html';
+            };
+        }
+    </script>
+</body>
+</html>
+

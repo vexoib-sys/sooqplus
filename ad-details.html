@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل الإعلان - السوق المفتوح</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>السوق المفتوح</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">الرئيسية</a>
+                <a href="post-ad.html" id="postAdLink">أضف إعلان</a>
+                <a href="login.html" id="loginLink">تسجيل الدخول</a>
+                <a href="#" id="logoutLink" style="display:none;" onclick="logout(); return false;">تسجيل الخروج</a>
+                <a href="user-dashboard.html" id="userDashboardLink" style="display:none;">لوحتي</a>
+                <a href="admin.html" id="adminLink" style="display:none;">لوحة التحكم</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Ad Details Section -->
+    <section class="ad-details-section">
+        <div class="container">
+            <div id="adDetailsContent">
+                <!-- Ad details will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 السوق المفتوح. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Load ad details on page load
+        window.onload = function() {
+            checkAuthStatus();
+            const urlParams = new URLSearchParams(window.location.search);
+            const adId = urlParams.get('id');
+            if (adId) {
+                loadAdDetails(adId);
+            } else {
+                document.getElementById('adDetailsContent').innerHTML = '<div class="error-message">الإعلان غير موجود</div>';
+            }
+        };
+        
+        // Add logout link check
+        if (typeof checkAuthStatus === 'function') {
+            checkAuthStatus();
+        }
+        updateSiteName();
+        updateSiteColor();
+    </script>
+</body>
+</html>
+
